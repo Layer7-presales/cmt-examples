@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><l7:ClusterProperty xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="9a5669a92ea9fd9b057038755f72d812" version="1">
+    <l7:Name>branding.style</l7:Name>
+    <l7:Value>#menubkg {
+    background-color: rgb(21,163,27);
+}
+
+.title-box h1 {
+    color: rgb(14,98,171);
+}
+</l7:Value>
+</l7:ClusterProperty>

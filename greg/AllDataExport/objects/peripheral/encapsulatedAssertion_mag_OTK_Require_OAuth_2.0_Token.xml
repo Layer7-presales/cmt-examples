@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><l7:EncapsulatedAssertion xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="0746e418d6dcc69d23656b445fb554da" version="0">
+    <l7:Name>mag OTK Require OAuth 2.0 Token</l7:Name>
+    <l7:Guid>mag393bcb93-82ad-4b55-8333-1119f607a</l7:Guid>
+    <l7:PolicyReference id="0746e418d6dcc69d23656b445fb54ef3" resourceUri="http://ns.l7tech.com/2010/04/gateway-management/policies"/>
+    <l7:EncapsulatedArguments>
+        <l7:EncapsulatedAssertionArgument>
+            <l7:Ordinal>2</l7:Ordinal>
+            <l7:ArgumentName>cache_lifetime</l7:ArgumentName>
+            <l7:ArgumentType>int</l7:ArgumentType>
+            <l7:GuiLabel>Cache validation result (s)</l7:GuiLabel>
+            <l7:GuiPrompt>true</l7:GuiPrompt>
+        </l7:EncapsulatedAssertionArgument>
+        <l7:EncapsulatedAssertionArgument>
+            <l7:Ordinal>1</l7:Ordinal>
+            <l7:ArgumentName>scope_required</l7:ArgumentName>
+            <l7:ArgumentType>string</l7:ArgumentType>
+            <l7:GuiLabel>Required SCOPE(s)</l7:GuiLabel>
+            <l7:GuiPrompt>true</l7:GuiPrompt>
+        </l7:EncapsulatedAssertionArgument>
+        <l7:EncapsulatedAssertionArgument>
+            <l7:Ordinal>5</l7:Ordinal>
+            <l7:ArgumentName>given_access_token</l7:ArgumentName>
+            <l7:ArgumentType>string</l7:ArgumentType>
+            <l7:GuiLabel>Access Token (Bearer only, optional)</l7:GuiLabel>
+            <l7:GuiPrompt>true</l7:GuiPrompt>
+        </l7:EncapsulatedAssertionArgument>
+        <l7:EncapsulatedAssertionArgument>
+            <l7:Ordinal>4</l7:Ordinal>
+            <l7:ArgumentName>scope_fail</l7:ArgumentName>
+            <l7:ArgumentType>boolean</l7:ArgumentType>
+            <l7:GuiLabel>Fail is this SCOPE was granted?</l7:GuiLabel>
+            <l7:GuiPrompt>true</l7:GuiPrompt>
+        </l7:EncapsulatedAssertionArgument>
+        <l7:EncapsulatedAssertionArgument>
+            <l7:Ordinal>3</l7:Ordinal>
+            <l7:ArgumentName>onetime</l7:ArgumentName>
+            <l7:ArgumentType>boolean</l7:ArgumentType>
+            <l7:GuiLabel>Is this a one-time access_token?</l7:GuiLabel>
+            <l7:GuiPrompt>true</l7:GuiPrompt>
+        </l7:EncapsulatedAssertionArgument>
+    </l7:EncapsulatedArguments>
+    <l7:EncapsulatedResults>
+        <l7:EncapsulatedAssertionResult>
+            <l7:ResultName>session.client_id</l7:ResultName>
+            <l7:ResultType>string</l7:ResultType>
+        </l7:EncapsulatedAssertionResult>
+        <l7:EncapsulatedAssertionResult>
+            <l7:ResultName>session.subscriber_id</l7:ResultName>
+            <l7:ResultType>string</l7:ResultType>
+        </l7:EncapsulatedAssertionResult>
+        <l7:EncapsulatedAssertionResult>
+            <l7:ResultName>access_token</l7:ResultName>
+            <l7:ResultType>string</l7:ResultType>
+        </l7:EncapsulatedAssertionResult>
+        <l7:EncapsulatedAssertionResult>
+            <l7:ResultName>session.scope</l7:ResultName>
+            <l7:ResultType>string</l7:ResultType>
+        </l7:EncapsulatedAssertionResult>
+        <l7:EncapsulatedAssertionResult>
+            <l7:ResultName>session.expires_at</l7:ResultName>
+            <l7:ResultType>string</l7:ResultType>
+        </l7:EncapsulatedAssertionResult>
+    </l7:EncapsulatedResults>
+    <l7:Properties>
+        <l7:Property key="paletteFolder">
+            <l7:StringValue>internalAssertions</l7:StringValue>
+        </l7:Property>
+        <l7:Property key="description">
+            <l7:StringValue>Requires a valid OAuth 2.0 Token.
+                    It searches the variables "request.http.header.authorization" and "request.http.parameters.access_token" for an access_token</l7:StringValue>
+        </l7:Property>
+        <l7:Property key="policyGuid">
+            <l7:StringValue>65e2a736-1c5f-4b17-9977-5b01cd28951e</l7:StringValue>
+        </l7:Property>
+        <l7:Property key="paletteIconResourceName">
+            <l7:StringValue>oauth.png</l7:StringValue>
+        </l7:Property>
+    </l7:Properties>
+</l7:EncapsulatedAssertion>

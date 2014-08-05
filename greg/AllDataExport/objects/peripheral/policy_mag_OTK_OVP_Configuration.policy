@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><exp:Export xmlns:exp="http://www.layer7tech.com/ws/policy/export" xmlns:L7p="http://www.layer7tech.com/ws/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy" Version="3.0">
+    <exp:References/>
+    <wsp:Policy xmlns:L7p="http://www.layer7tech.com/ws/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy">
+        <wsp:All wsp:Usage="Required">
+            <L7p:CommentAssertion>
+                <L7p:Comment stringValue="This policy can be found and should be used as 'Encapsulated Assertion'!"/>
+            </L7p:CommentAssertion>
+            <L7p:CommentAssertion>
+                <L7p:Comment stringValue="This endpoint should point to the server that holds all OAuth validation endpoints."/>
+            </L7p:CommentAssertion>
+            <L7p:CommentAssertion>
+                <L7p:Comment stringValue="Usually those endpoints are found within the folder 'SecureZone - OVP'."/>
+            </L7p:CommentAssertion>
+            <L7p:SetVariable>
+                <L7p:Base64Expression stringValue="aHR0cHM6Ly9sb2NhbGhvc3Q6ODQ0Mw=="/>
+                <L7p:VariableToSet stringValue="host_oauth_ovp_server"/>
+            </L7p:SetVariable>
+        </wsp:All>
+    </wsp:Policy>
+</exp:Export>
