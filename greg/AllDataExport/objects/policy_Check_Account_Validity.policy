@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><exp:Export xmlns:exp="http://www.layer7tech.com/ws/policy/export" xmlns:L7p="http://www.layer7tech.com/ws/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy" Version="3.0">
+    <exp:References>
+        <JdbcConnectionReference RefType="com.l7tech.console.policy.exporter.JdbcConnectionReference">
+            <ConnectionName>OAuth_MAG</ConnectionName>
+            <DriverClass>com.mysql.jdbc.Driver</DriverClass>
+            <JdbcUrl>jdbc:mysql://localhost:3306/otk_mag_db</JdbcUrl>
+            <UserName>otk_mag_user</UserName>
+            <AdditionalProperties/>
+        </JdbcConnectionReference>
+    </exp:References>
+    <wsp:Policy xmlns:L7p="http://www.layer7tech.com/ws/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy">
+        <wsp:All wsp:Usage="Required">
+            <wsp:OneOrMore wsp:Usage="Required">
+                <wsp:All wsp:Usage="Required">
+                    <L7p:JdbcQuery>
+                        <L7p:ConnectionName stringValue="OAuth_MAG"/>
+                        <L7p:NamingMap mapValue="included">
+                            <L7p:entry>
+                                <L7p:key stringValue="status"/>
+                                <L7p:value stringValue="status"/>
+                            </L7p:entry>
+                        </L7p:NamingMap>
+                        <L7p:SqlQuery stringValue="select status from user where id=${userid};"/>
+                    </L7p:JdbcQuery>
+                    <L7p:SetVariable>
+                        <L7p:Base64Expression stringValue="JHtqZGJjUXVlcnkuc3RhdHVzfQ=="/>
+                        <L7p:VariableToSet stringValue="accountStatus"/>
+                    </L7p:SetVariable>
+                </wsp:All>
+                <L7p:SetVariable>
+                    <L7p:Base64Expression stringValue="aW52YWxpZA=="/>
+                    <L7p:VariableToSet stringValue="accountStatus"/>
+                </L7p:SetVariable>
+            </wsp:OneOrMore>
+            <L7p:ExportVariables>
+                <L7p:ExportedVars stringArrayValue="included">
+                    <L7p:item stringValue="accountStatus"/>
+                </L7p:ExportedVars>
+            </L7p:ExportVariables>
+        </wsp:All>
+    </wsp:Policy>
+</exp:Export>

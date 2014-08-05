@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><l7:JDBCConnection xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="0746e418d6dcc69d23656b445fb541c3" version="1">
+    <l7:Name>OAuth_MAG</l7:Name>
+    <l7:Enabled>true</l7:Enabled>
+    <l7:Properties>
+        <l7:Property key="maximumPoolSize">
+            <l7:IntegerValue>15</l7:IntegerValue>
+        </l7:Property>
+        <l7:Property key="minimumPoolSize">
+            <l7:IntegerValue>3</l7:IntegerValue>
+        </l7:Property>
+    </l7:Properties>
+    <l7:Extension>
+        <l7:DriverClass>com.mysql.jdbc.Driver</l7:DriverClass>
+        <l7:JdbcUrl>jdbc:mysql://localhost:3306/otk_mag_db</l7:JdbcUrl>
+        <l7:ConnectionProperties>
+            <l7:Property key="user">
+                <l7:StringValue>otk_mag_user</l7:StringValue>
+            </l7:Property>
+        </l7:ConnectionProperties>
+    </l7:Extension>
+</l7:JDBCConnection>

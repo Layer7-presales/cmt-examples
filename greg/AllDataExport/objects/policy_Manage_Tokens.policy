@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?><exp:Export xmlns:exp="http://www.layer7tech.com/ws/policy/export" xmlns:L7p="http://www.layer7tech.com/ws/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy" Version="3.0">
+    <exp:References>
+        <JdbcConnectionReference RefType="com.l7tech.console.policy.exporter.JdbcConnectionReference">
+            <ConnectionName>OAuth_MAG</ConnectionName>
+            <DriverClass>com.mysql.jdbc.Driver</DriverClass>
+            <JdbcUrl>jdbc:mysql://localhost:3306/otk_mag_db</JdbcUrl>
+            <UserName>otk_mag_user</UserName>
+            <AdditionalProperties/>
+        </JdbcConnectionReference>
+    </exp:References>
+    <wsp:Policy xmlns:L7p="http://www.layer7tech.com/ws/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy">
+        <wsp:All wsp:Usage="Required">
+            <L7p:SetVariable>
+                <L7p:Base64Expression stringValue="JHtyZXF1ZXN0Lmh0dHAucGFyYW1ldGVyLnN0YXRlfQ=="/>
+                <L7p:Enabled booleanValue="false"/>
+                <L7p:VariableToSet stringValue="state"/>
+            </L7p:SetVariable>
+            <L7p:SetVariable>
+                <L7p:Base64Expression stringValue="ZmFsc2U="/>
+                <L7p:VariableToSet stringValue="issueToken"/>
+            </L7p:SetVariable>
+            <L7p:JdbcQuery>
+                <L7p:ConnectionName stringValue="OAuth_MAG"/>
+                <L7p:NamingMap mapValue="included">
+                    <L7p:entry>
+                        <L7p:key stringValue="max_session"/>
+                        <L7p:value stringValue="max_session"/>
+                    </L7p:entry>
+                </L7p:NamingMap>
+                <L7p:SqlQuery stringValue="select max_session from user where id=${userid}"/>
+            </L7p:JdbcQuery>
+            <L7p:SetVariable>
+                <L7p:Base64Expression stringValue="JHtqZGJjUXVlcnkubWF4X3Nlc3Npb259"/>
+                <L7p:DataType variableDataType="int"/>
+                <L7p:VariableToSet stringValue="maxSessions"/>
+            </L7p:SetVariable>
+            <L7p:SetVariable>
+                <L7p:Base64Expression stringValue="MA=="/>
+                <L7p:DataType variableDataType="int"/>
+                <L7p:VariableToSet stringValue="numSessions"/>
+            </L7p:SetVariable>
+            <wsp:OneOrMore wsp:Usage="Required">
+                <wsp:All wsp:Usage="Required">
+                    <L7p:JdbcQuery>
+                        <L7p:ConnectionName stringValue="OAuth_MAG"/>
+                        <L7p:NamingMap mapValue="included">
+                            <L7p:entry>
+                                <L7p:key stringValue="count(resource_owner)"/>
+                                <L7p:value stringValue="count"/>
+                            </L7p:entry>
+                        </L7p:NamingMap>
+                        <L7p:SqlQuery stringValue="select count(resource_owner) from oauth_token where resource_owner=${userid};"/>
+                    </L7p:JdbcQuery>
+                    <L7p:SetVariable>
+                        <L7p:Base64Expression stringValue="JHtqZGJjUXVlcnkuY291bnR9"/>
+                        <L7p:DataType variableDataType="int"/>
+                        <L7p:VariableToSet stringValue="numSessions"/>
+                    </L7p:SetVariable>
+                </wsp:All>
+                <L7p:TrueAssertion/>
+                <L7p:assertionComment>
+                    <L7p:Properties mapValue="included">
+                        <L7p:entry>
+                            <L7p:key stringValue="LEFT.COMMENT"/>
+                            <L7p:value stringValue="// Determine number of existing sessions"/>
+                        </L7p:entry>
+                    </L7p:Properties>
+                </L7p:assertionComment>
+            </wsp:OneOrMore>
+            <L7p:AuditDetailAssertion>
+                <L7p:Detail stringValueReference="inline"><![CDATA[USER ID: ${userid}
+NUM SESSIONS: ${numSessions}
+MAX SESSIONS: ${maxSessions}]]></L7p:Detail>
+                <L7p:Level stringValue="WARNING"/>
+            </L7p:AuditDetailAssertion>
+            <wsp:OneOrMore wsp:Usage="Required">
+                <wsp:All wsp:Usage="Required">
+                    <L7p:ComparisonAssertion>
+                        <L7p:CaseSensitive booleanValue="false"/>
+                        <L7p:Expression1 stringValue="${numSessions}"/>
+                        <L7p:Operator operatorNull="null"/>
+                        <L7p:Predicates predicates="included">
+                            <L7p:item dataType="included">
+                                <L7p:Type variableDataType="int"/>
+                            </L7p:item>
+                            <L7p:item binary="included">
+                                <L7p:Operator operator="GE"/>
+                                <L7p:RightValue stringValue="${maxSessions}"/>
+                            </L7p:item>
+                        </L7p:Predicates>
+                    </L7p:ComparisonAssertion>
+                    <L7p:CommentAssertion>
+                        <L7p:Comment stringValue="// DISPLAY LIST OF TOKENS"/>
+                    </L7p:CommentAssertion>
+                    <wsp:All wsp:Usage="Required">
+                        <L7p:SetVariable>
+                            <L7p:Base64Expression stringValue=""/>
+                            <L7p:VariableToSet stringValue="token"/>
+                        </L7p:SetVariable>
+                        <L7p:JdbcQuery>
+                            <L7p:ConnectionName stringValue="OAuth_MAG"/>
+                            <L7p:GenerateXmlResult booleanValue="true"/>
+                            <L7p:NamingMap mapValue="included">
+                                <L7p:entry>
+                                    <L7p:key stringValue="token"/>
+                                    <L7p:value stringValue="token"/>
+                                </L7p:entry>
+                                <L7p:entry>
+                                    <L7p:key stringValue="expiration"/>
+                                    <L7p:value stringValue="expiration"/>
+                                </L7p:entry>
+                                <L7p:entry>
+                                    <L7p:key stringValue="client_name"/>
+                                    <L7p:value stringValue="client_name"/>
+                                </L7p:entry>
+                            </L7p:NamingMap>
+                            <L7p:SqlQuery stringValue="select token, expiration, client_name from oauth_token where resource_owner=${userid};"/>
+                        </L7p:JdbcQuery>
+                        <L7p:SetVariable>
+                            <L7p:Base64Expression stringValue="JHtqZGJjUXVlcnkueG1sUmVzdWx0fQ=="/>
+                            <L7p:ContentType stringValue="text/xml; charset=utf-8"/>
+                            <L7p:DataType variableDataType="message"/>
+                            <L7p:VariableToSet stringValue="jdbcResults"/>
+                        </L7p:SetVariable>
+                        <L7p:AuditDetailAssertion>
+                            <L7p:Detail stringValue="JDBCQUERY: ${jdbcQuery.xmlResult}"/>
+                            <L7p:Level stringValue="WARNING"/>
+                        </L7p:AuditDetailAssertion>
+                        <L7p:ResponseXpathAssertion>
+                            <L7p:VariablePrefix stringValue="jdbcResults"/>
+                            <L7p:XmlMsgSrc stringValue="jdbcResults"/>
+                            <L7p:XpathExpression xpathExpressionValue="included">
+                                <L7p:Expression stringValue="/L7j:jdbcQueryResult/L7j:row"/>
+                                <L7p:Namespaces mapValue="included">
+                                    <L7p:entry>
+                                    <L7p:key stringValue="L7j"/>
+                                    <L7p:value stringValue="http://ns.l7tech.com/2012/08/jdbc-query-result"/>
+                                    </L7p:entry>
+                                    <L7p:entry>
+                                    <L7p:key stringValue="s"/>
+                                    <L7p:value stringValue="http://schemas.xmlsoap.org/soap/envelope/"/>
+                                    </L7p:entry>
+                                </L7p:Namespaces>
+                                <L7p:XpathVersion xpathVersion="XPATH_1_0"/>
+                            </L7p:XpathExpression>
+                        </L7p:ResponseXpathAssertion>
+                        <L7p:SetVariable>
+                            <L7p:Base64Expression stringValue="PHA+VXNlciBJRDogJHt1c2VyaWR9PC9wPg=="/>
+                            <L7p:VariableToSet stringValue="message"/>
+                        </L7p:SetVariable>
+                        <L7p:ForEachLoop L7p:Usage="Required" iterationLimit="10" loopVariable="jdbcResults.elements" variablePrefix="itr">
+                            <L7p:AuditDetailAssertion>
+                                <L7p:Detail stringValue="ITR: ${itr.current}"/>
+                                <L7p:Level stringValue="WARNING"/>
+                            </L7p:AuditDetailAssertion>
+                            <L7p:SetVariable>
+                                <L7p:Base64Expression stringValue="PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCiR7aXRyLmN1cnJlbnR9"/>
+                                <L7p:ContentType stringValue="text/xml; charset=utf-8"/>
+                                <L7p:DataType variableDataType="message"/>
+                                <L7p:VariableToSet stringValue="row"/>
+                            </L7p:SetVariable>
+                            <L7p:ResponseXpathAssertion>
+                                <L7p:VariablePrefix stringValue="expiration"/>
+                                <L7p:XmlMsgSrc stringValue="row"/>
+                                <L7p:XpathExpression xpathExpressionValue="included">
+                                    <L7p:Expression stringValue="/L7j:row/L7j:col[name='expiration']"/>
+                                    <L7p:Namespaces mapValue="included">
+                                    <L7p:entry>
+                                    <L7p:key stringValue="L7j"/>
+                                    <L7p:value stringValue="http://ns.l7tech.com/2012/08/jdbc-query-result"/>
+                                    </L7p:entry>
+                                    <L7p:entry>
+                                    <L7p:key stringValue="s"/>
+                                    <L7p:value stringValue="http://schemas.xmlsoap.org/soap/envelope/"/>
+                                    </L7p:entry>
+                                    </L7p:Namespaces>
+                                    <L7p:XpathVersion xpathVersion="XPATH_2_0"/>
+                                </L7p:XpathExpression>
+                            </L7p:ResponseXpathAssertion>
+                            <L7p:ResponseXpathAssertion>
+                                <L7p:VariablePrefix stringValue="client"/>
+                                <L7p:XmlMsgSrc stringValue="row"/>
+                                <L7p:XpathExpression xpathExpressionValue="included">
+                                    <L7p:Expression stringValue="/L7j:row/L7j:col[name='client_name']"/>
+                                    <L7p:Namespaces mapValue="included">
+                                    <L7p:entry>
+                                    <L7p:key stringValue="L7j"/>
+                                    <L7p:value stringValue="http://ns.l7tech.com/2012/08/jdbc-query-result"/>
+                                    </L7p:entry>
+                                    <L7p:entry>
+                                    <L7p:key stringValue="s"/>
+                                    <L7p:value stringValue="http://schemas.xmlsoap.org/soap/envelope/"/>
+                                    </L7p:entry>
+                                    </L7p:Namespaces>
+                                    <L7p:XpathVersion xpathVersion="XPATH_2_0"/>
+                                </L7p:XpathExpression>
+                            </L7p:ResponseXpathAssertion>
+                            <L7p:ResponseXpathAssertion>
+                                <L7p:VariablePrefix stringValue="token"/>
+                                <L7p:XmlMsgSrc stringValue="row"/>
+                                <L7p:XpathExpression xpathExpressionValue="included">
+                                    <L7p:Expression stringValue="/L7j:row/L7j:col[name='token']"/>
+                                    <L7p:Namespaces mapValue="included">
+                                    <L7p:entry>
+                                    <L7p:key stringValue="L7j"/>
+                                    <L7p:value stringValue="http://ns.l7tech.com/2012/08/jdbc-query-result"/>
+                                    </L7p:entry>
+                                    <L7p:entry>
+                                    <L7p:key stringValue="s"/>
+                                    <L7p:value stringValue="http://schemas.xmlsoap.org/soap/envelope/"/>
+                                    </L7p:entry>
+                                    </L7p:Namespaces>
+                                    <L7p:XpathVersion xpathVersion="XPATH_2_0"/>
+                                </L7p:XpathExpression>
+                            </L7p:ResponseXpathAssertion>
+                            <L7p:SetVariable>
+                                <L7p:Base64Expression stringValue="JHttZXNzYWdlfQ0KPGJyPg0KPHA+Q2xpZW50IE5hbWU6ICR7Y2xpZW50LnJlc3VsdH08L3A+DQo8cD5Ub2tlbjogJHt0b2tlbi5yZXN1bHR9PC9wPg0KPHA+RXhwaXJ5IFRpbWU6ICR7ZXhwaXJhdGlvbi5yZXN1bHR9PC9wPg0KPGZvcm0gYWN0aW9uPSIke3NlcnZpY2UudXJsfSIgbWV0aG9kPSJQT1NUIj4NCgk8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJzdGF0ZSIgdmFsdWU9ImRlbGV0ZSIvPg0KCTxpbnB1dCB0eXBlPSJoaWRkZW4iIE5hbWU9InVzZXJpZCIgdmFsdWU9IiR7dXNlcmlkfSIvPgkNCgk8aW5wdXQgdHlwZT0ic3VibWl0IiB2YWx1ZT0iZGVsZXRlIi8+DQo8L2Zvcm0+"/>
+                                <L7p:VariableToSet stringValue="message"/>
+                            </L7p:SetVariable>
+                        </L7p:ForEachLoop>
+                        <L7p:HardcodedResponse>
+                            <L7p:AssertionComment assertionComment="included">
+                                <L7p:Properties mapValue="included">
+                                    <L7p:entry>
+                                    <L7p:key stringValue="LEFT.COMMENT"/>
+                                    <L7p:value stringValue="200"/>
+                                    </L7p:entry>
+                                </L7p:Properties>
+                            </L7p:AssertionComment>
+                            <L7p:Base64ResponseBody stringValue="JHt3ZWJzaXRlX3RvcH0KJHttZXNzYWdlfQoke3dlYnNpdGVfYm90dG9tfQ=="/>
+                            <L7p:EarlyResponse booleanValue="true"/>
+                            <L7p:ResponseContentType stringValue="text/html; charset=UTF-8"/>
+                        </L7p:HardcodedResponse>
+                    </wsp:All>
+                </wsp:All>
+                <wsp:All wsp:Usage="Required">
+                    <L7p:SetVariable>
+                        <L7p:Base64Expression stringValue="dHJ1ZQ=="/>
+                        <L7p:VariableToSet stringValue="issueToken"/>
+                    </L7p:SetVariable>
+                </wsp:All>
+            </wsp:OneOrMore>
+            <wsp:All L7p:Enabled="false" wsp:Usage="Required">
+                <L7p:SetVariable>
+                    <L7p:Base64Expression stringValue="VG9rZW4gTWFuYWdlcg=="/>
+                    <L7p:VariableToSet stringValue="this.app.name"/>
+                </L7p:SetVariable>
+                <L7p:SetVariable>
+                    <L7p:Base64Expression stringValue="aHR0cHM6Ly8ke3JlcXVlc3QudXJsLmhvc3R9Ojg0NDMke3JlcXVlc3QudXJsLnBhdGh9"/>
+                    <L7p:VariableToSet stringValue="this.app.url"/>
+                </L7p:SetVariable>
+                <L7p:SetVariable>
+                    <L7p:Base64Expression stringValue="PHN0eWxlIHR5cGU9InRleHQvY3NzIj4NCmJvZHkuZHJhZ3tjdXJzb3I6bW92ZTt9dGguYWN0aXZlIGltZ3tkaXNwbGF5OmlubGluZTt9dHIuZXZlbix0ci5vZGR7YmFja2dyb3VuZC1jb2xvcjojZWVlO2JvcmRlci1ib3R0b206MXB4IHNvbGlkICNjY2M7cGFkZGluZzowLjFlbSAwLjZlbTt9DQp0ci5kcmFne2JhY2tncm91bmQtY29sb3I6I2ZmZmZmMDt9dHIuZHJhZy1wcmV2aW91c3tiYWNrZ3JvdW5kLWNvbG9yOiNmZmQ7fQ0KdGQuYWN0aXZle2JhY2tncm91bmQtY29sb3I6I2RkZDt9dGQuY2hlY2tib3gsdGguY2hlY2tib3h7dGV4dC1hbGlnbjpjZW50ZXI7fQ0KdGJvZHl7Ym9yZGVyLXRvcDoxcHggc29saWQgI2NjYzt9dGJvZHkgdGh7Ym9yZGVyLWJvdHRvbToxcHggc29saWQgI2NjYzt9DQp0aGVhZCB0aHt0ZXh0LWFsaWduOmxlZnQ7DQogICAgcGFkZGluZy1yaWdodDoxZW07DQogICAgYm9yZGVyLWJvdHRvbTozcHggc29saWQgI2NjYzt9DQouYnJlYWRjcnVtYntwYWRkaW5nLWJvdHRvbTouNWVtfWRpdi5pbmRlbnRhdGlvbnt3aWR0aDoyMHB4O2hlaWdodDoxLjdlbTttYXJnaW46LTAuNGVtIDAuMmVtIC0wLjRlbSAtMC40ZW07DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwYWRkaW5nOjAuNDJlbSAwIDAuNDJlbSAwLjZlbTsNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZsb2F0OmxlZnQ7fQ0KdWwucHJpbWFyeXtib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7cGFkZGluZzowIDAgMCAxZW07DQogICAgd2hpdGUtc3BhY2U6bm93cmFwO2xpc3Qtc3R5bGU6bm9uZTttYXJnaW46NXB4O2hlaWdodDphdXRvO2xpbmUtaGVpZ2h0Om5vcm1hbDtib3JkZXItYm90dG9tOjFweCBzb2xpZCAjYmJiO30NCnVsLnByaW1hcnkgbGl7ZGlzcGxheTppbmxpbmU7fXVsLnByaW1hcnkgbGkgYXtiYWNrZ3JvdW5kLWNvbG9yOiNkZGQ7Ym9yZGVyLWNvbG9yOiNiYmI7Ym9yZGVyLXdpZHRoOjFweDtib3JkZXItc3R5bGU6c29saWQgc29saWQgbm9uZSBzb2xpZDtoZWlnaHQ6YXV0bzttYXJnaW4tcmlnaHQ6MC41ZW07DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcGFkZGluZzowIDFlbTt0ZXh0LWRlY29yYXRpb246bm9uZTt9dWwucHJpbWFyeSBsaS5hY3RpdmUgYXtiYWNrZ3JvdW5kLWNvbG9yOiNmZmY7Ym9yZGVyOjFweCBzb2xpZCAjYmJiO2JvcmRlci1ib3R0b206I2ZmZiAxcHggc29saWQ7fQ0KdWwucHJpbWFyeSBsaSBhOmhvdmVye2JhY2tncm91bmQtY29sb3I6I2VlZTtib3JkZXItY29sb3I6I2NjYztib3JkZXItYm90dG9tLWNvbG9yOiNlZWU7fXVsLnNlY29uZGFyeXtib3JkZXItYm90dG9tOjFweCBzb2xpZCAjYmJiO3BhZGRpbmc6MC41ZW0gMWVtO21hcmdpbjo1cHg7fQ0KDQoqe21hcmdpbjowO30NCmh0bWwsYm9keXtiYWNrZ3JvdW5kOiNmZmY7Zm9udDoxMnB4LzEuMmVtIGhlbHZldGljYSxhcmlhbCxzYW5zLXNlcmlmO2NvbG9yOiM0YjRiNGI7aGVpZ2h0OjEwMCU7bGluZS1oZWlnaHQ6MS4zZW07fQ0KaHJ7aGVpZ2h0OjFweDtiYWNrZ3JvdW5kLWNvbG9yOiNkZGQ7IG5vLXJlcGVhdCBjZW50ZXIgYm90dG9tO3BhZGRpbmc6OHB4IGF1dG87Ym9yZGVyOjAgbm9uZTt9DQppbnB1dHtjb2xvcjojNGI0YjRiO30NCmgxLGgyLGgzLGg0LGg1LGg2e3BhZGRpbmc6MDtmb250LXdlaWdodDpub3JtYWw7Zm9udC1mYW1pbHk6aGVsdmV0aWNhLGFyaWFsLHNhbnMtc2VyaWY7fQ0KaDF7Zm9udC1zaXplOjI1MCU7Y29sb3I6d2hpdGU7ei1pbmRleDo1O30NCmgye2ZvbnQtc2l6ZToxNzUlO30NCmgze2ZvbnQtc2l6ZToxNTAlO30NCmg0e2ZvbnQtc2l6ZToxMjAlO30NCmg1e2ZvbnQtc2l6ZToxMTAlO30NCmg2e2ZvbnQtc2l6ZToxMDUlO30NCmE6YWN0aXZlLGEuYWN0aXZle2NvbG9yOiM0YjRiNGI7dGV4dC1kZWNvcmF0aW9uOm5vbmU7fQ0KYTpsaW5rLGE6dmlzaXRlZHtjb2xvcjojNGI0YjRiO3RleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7b3V0bGluZTpub25lO30NCmE6aG92ZXJ7Y29sb3I6I2RiM2IyYzt0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30NCnB7bWFyZ2luLWJvdHRvbTouNWVtO2xpbmUtaGVpZ2h0OjEuM2VtO2xpc3Qtc3R5bGU6bm9uZTt0ZXh0LWFsaWduOmxlZnQ7bGluZS1oZWlnaHQ6MS41ZW07Y29sb3I6IzRiNGI0Yjt9DQpibG9ja3F1b3RlICp7bWFyZ2luOjVweCAwIDAgMTBweDt9dWx7bGluZS1oZWlnaHQ6MS41ZW07DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHBhZGRpbmc6LjJlbSAxZW0gMWVtIDFlbTt9b2x7bGluZS1oZWlnaHQ6MS41ZW07cGFkZGluZzouMmVtIDFlbSAxZW0gMWVtO310ci5ldmVuLHRyLm9kZHtiYWNrZ3JvdW5kOm5vbmU7fWltZyxhIGltZ3tib3JkZXI6bm9uZTt9DQpuby1yZXBlYXQgbGVmdCAzNSU7bWFyZ2luLWxlZnQ6LjVlbTtwYWRkaW5nLWxlZnQ6MWVtO30NCiN3cmFwcGVye21pbi1oZWlnaHQ6MTAwJTtoZWlnaHQ6YXV0byAhaW1wb3J0YW50O2hlaWdodDoxMDAlO21hcmdpbjowIGF1dG8gLTVlbTt9I2NvbnRhaW5lcnttYXJnaW46LTIuNWVtIGF1dG8gMCAyLjVlbTt9DQouZmllbGQtY29udGVudCAudmlldy1kb20taWQtNSAudmlldy1jb250ZW50IC52aWV3cy1yb3d7DQogICAgbWFyZ2luOjBweDtwYWRkaW5nOjBweDt9DQoNCiNzaWRlYmFyLWxlZnR7cG9zaXRpb246cmVsYXRpdmU7ZmxvYXQ6bGVmdDtjbGVhcjpsZWZ0O3BhZGRpbmc6MmVtIDAgNmVtIDA7ei1pbmRleDo1MDA7d2lkdGg6MTMuNWVtO30NCiNzaWRlYmFyLWxlZnQgLmNvbnRlbnR7bWFyZ2luLXRvcDouOGVtO30NCiNzaWRlYmFyLWxlZnQgYXtkaXNwbGF5OmJsb2NrO2xpbmUtaGVpZ2h0OjEuMmVtO3BhZGRpbmc6M3B4IDAgMXB4IDNweDt0ZXh0LWRlY29yYXRpb246bm9uZTtmb250LXNpemU6MTA1JTttYXJnaW4tbGVmdDozcHg7bWFyZ2luLXJpZ2h0OjNweDt9DQojc2lkZWJhci1sZWZ0IHVse3dpZHRoOjEzLjVlbTtkaXNwbGF5OmJsb2NrO2xpc3Qtc3R5bGU6bm9uZTt9DQojc2lkZWJhci1sZWZ0IHVsIHVse25vLXJlcGVhdCBjZW50ZXIgdG9wO3BhZGRpbmctbGVmdDouMmVtO30NCiNzaWRlYmFyLWxlZnQgYTpob3ZlciwNCiNzaWRlYmFyLWxlZnQgYS5hY3RpdmV7YmFja2dyb3VuZC1jb2xvcjojZDgzYjJjO2NvbG9yOndoaXRlO30NCiNzaWRlYmFyLWxlZnQgLm5vbGluay1saXtwYWRkaW5nLXRvcDoxLjNlbTt9DQojc2lkZWJhci1sZWZ0IC5maXJzdC5ub2xpbmstbGl7cGFkZGluZy10b3A6MDt9DQojc2lkZWJhci1sZWZ0IC5ub2xpbmt7Y29sb3I6IzIzMjAyMTtmb250LXNpemU6MTIwJTtmb250LXdlaWdodDo2MDA7fQ0KI3NpZGViYXItbGVmdCAubWVudS1uYW1lLW1lbnUtcmVzb3VyY2VzIC5ub2xpbmt7Zm9udC13ZWlnaHQ6MTAwO2ZvbnQtc2l6ZToxMDUlO30NCiNzaWRlYmFyLWxlZnQgbGkubGVhZntib3JkZXI6bm9uZTt0ZXh0LWluZGVudDpub25lOyBuby1yZXBlYXQgY2VudGVyIGJvdHRvbTtkaXNwbGF5OmJsb2NrO3BhZGRpbmc6MXB4IDAgMnB4O30NCiNzaWRlYmFyLWxlZnQgdWwgdWwgbGkuZmlyc3R7cGFkZGluZy10b3A6MnB4O30NCg0KLnZpZXctY29udGVudCBoNHtmb250LXNpemU6MTAwJTt9I25hdmlnYXRpb257cG9zaXRpb246cmVsYXRpdmU7Ym9yZGVyOjBweCBzb2xpZCByZWQ7bWFyZ2luOjBweDtwYWRkaW5nOjBweDt9DQoNCi5icmVhZGNydW1ie3RleHQtYWxpZ246bGVmdDtwYWRkaW5nOjA7cG9zaXRpb246YWJzb2x1dGU7dG9wOjQuN2VtO2xlZnQ6MTUuOGVtO3otaW5kZXg6NTA7fS5icmVhZGNydW1iIGEuYWN0aXZlLC5icmVhZGNydW1iIGE6YWN0aXZle2NvbG9yOiMyMzIwMjE7dGV4dC1kZWNvcmF0aW9uOm5vbmU7fS5icmVhZGNydW1iIGE6aG92ZXJ7Y29sb3I6I2RiM2IyYzt9bGkubGVhZntkaXNwbGF5OmlubGluZTtwYWRkaW5nOjAgMC41ZW0gMCAwLjNlbTt2ZXJ0aWNhbC1hbGlnbjptaWRkbGU7Ym9yZGVyLXJpZ2h0OjFweCBzb2xpZCAjNzI3MjcyO30NCg0KI2hlYWRlcntoZWlnaHQ6Ni41ZW07bWF4LXdpZHRoOjEwMCU7cG9zaXRpb246cmVsYXRpdmU7fSNoZWFkZXIgI2xvZ28tZmxvYXRlcntmbG9hdDpsZWZ0O3Bvc2l0aW9uOnJlbGF0aXZlO3RvcDoxMCU7d2lkdGg6MTU5cHg7aGVpZ2h0OjUzcHg7bWFyZ2luLWxlZnQ6Mi41ZW07fWRpdiNyZXN7ZGlzcGxheTpub25lO3Zpc2liaWxpdHk6aGlkZGVuO30jbWVudWJrZ3twb3NpdGlvbjpyZWxhdGl2ZTt3aWR0aDoxMDAlO2hlaWdodDozMXB4O2JhY2tncm91bmQtY29sb3I6IzY2Njt0b3A6Ni42ZW07ei1pbmRleDowO30NCg0KZGl2Lmxpbmtze2Rpc3BsYXk6bm9uZTt9DQoNCiNjb250ZW50e21hcmdpbjo0LjNlbSBhdXRvIDFlbSAyLjVlbTt9DQouc3VibWl0dGVke2Rpc3BsYXk6bm9uZTt9LmNvbnRhaW5lcnt6LWluZGV4OjU7aGVpZ2h0OjEwMCU7cGFkZGluZy10b3A6LjJlbTt9DQoudGl0bGUtYm94IGgxe2NvbG9yOiNkYjNiMmM7bGluZS1oZWlnaHQ6MWVtO30NCg0KI25hdmlnYXRpb24gZGl2Lm1lbnUtbmFtZS1wcmltYXJ5LWxpbmtzIHVse2JvcmRlcjowO2xpc3Qtc3R5bGU6bm9uZTtoZWlnaHQ6MzFweDttYXJnaW46MDtwYWRkaW5nOjA7d2lkdGg6MTAwJTt9DQojbmF2aWdhdGlvbiBkaXYubWVudS1uYW1lLXByaW1hcnktbGlua3MgdWwgbGl7YmFja2dyb3VuZDp0cmFuc3BhcmVudDtib3JkZXI6MDtmbG9hdDpsZWZ0O21hcmdpbjowO3BhZGRpbmc6MDtsaXN0LXN0eWxlOm5vbmU7cG9zaXRpb246cmVsYXRpdmU7fQ0KI25hdmlnYXRpb24gZGl2Lm1lbnUtbmFtZS1wcmltYXJ5LWxpbmtzIHVsIGxpIGF7ZGlzcGxheTpibG9jaztoZWlnaHQ6MzFweDt0ZXh0LWluZGVudDotNTAwMHB4O30NCiNuYXZpZ2F0aW9uIGRpdi5tZW51LW5hbWUtcHJpbWFyeS1saW5rcyBsaSBhe2JhY2tncm91bmQtY29sb3I6I2NjYzt9DQojbmF2aWdhdGlvbiBkaXYubWVudS1uYW1lLXByaW1hcnktbGlua3MgbGkgYTpob3ZlcntiYWNrZ3JvdW5kLWNvbG9yOiNjY2M7fQ0KI25hdmlnYXRpb24gZGl2Lm1lbnUtbmFtZS1wcmltYXJ5LWxpbmtzIGxpLm1lbnUtbWxpZC0yMzkzID4gYTpob3Zlcnt9DQoNCiNib3R0b21iYXJ7cG9zaXRpb246cmVsYXRpdmU7cGFkZGluZzoyZW0gMCA2ZW0gMDt6LWluZGV4OjUwMDt3aWR0aDoxMy41ZW07Zm9udC1zaXplOjEzMCU7fQ0KI2JvdHRvbWJhciAuY29udGVudHttYXJnaW4tdG9wOi44ZW07fQ0KI2JvdHRvbWJhciBhe2xpbmUtaGVpZ2h0OjEuMmVtO3BhZGRpbmc6M3B4IDNweCAzcHggM3B4O3RleHQtZGVjb3JhdGlvbjpub25lO30NCiNib3R0b21iYXIgYTpob3ZlciwNCiNib3R0b21iYXIgYS5hY3RpdmV7Y29sb3I6I2Q4M2IyYzt9DQojYm90dG9tYmFyIGJ7Zm9udC1zaXplOjEzMyU7fQ0KDQo8L3N0eWxlPg=="/>
+                    <L7p:VariableToSet stringValue="website_style"/>
+                </L7p:SetVariable>
+                <L7p:SetVariable>
+                    <L7p:Base64Expression stringValue="PGh0bWwgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGh0bWwiIHhtbDpsYW5nPSJlbiIgbGFuZz0iZW4iIGRpcj0ibHRyIj4NCjxoZWFkPg0KPG1ldGEgaHR0cC1lcXVpdj0iQ29udGVudC1UeXBlIiBjb250ZW50PSJ0ZXh0L2h0bWw7IGNoYXJzZXQ9dXRmLTgiIC8+DQo8dGl0bGU+JHt0aGlzLmFwcC5uYW1lfTwvdGl0bGU+DQoke3dlYnNpdGVfc3R5bGV9DQo8L2hlYWQ+DQoNCjxib2R5Pg0KICAgICA8ZGl2IGlkPSJtZW51YmtnIj48L2Rpdj4NCiAgICAgPGRpdiBpZD0iY29udGFpbmVyIj4NCgkgIDxkaXYgaWQ9ImhlYWRlciI+DQoJCQk8ZGl2IGlkPSJsb2dvLWZsb2F0ZXIiPjxhIHRpdGxlPSIiIGhyZWY9IiR7cmVxdWVzdC51cmwucGF0aH0iPjxpbWcgaWQ9ImxvZ28iIGFsdD0iTGF5ZXI3IiBzcmM9ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBSjhBQUFBMUNBTUFBQUJvUXNsYUFBQUFHWFJGV0hSVGIyWjBkMkZ5WlFCQlpHOWlaU0JKYldGblpWSmxZV1I1Y2NsbFBBQUFBTUJRVEZSRkZCQU1qSTZPN3FPbGEyOXc1dWZuOU1qSjVtRmd5TWpJVDFKUzRUd3QxZGZZdExlNCtmbjU4L1QwcDZpblhXTm0rZVRsL3Z6Nyt2MytxN3E4K3Z6NSt1L3cvZm43d01QRTZvZUlnSVNHMGRMUytmdjgvZnovOXZqNjcvRHpvNkdmVlZ4ZjkvajNxNjZ3K2ZmMHVidTlucUtrUkVFOTI5emR5ODNPdjhDKzlmWDE3ZTd1NnV2cjR1UGs1RXhJZDN0N3JxMnJYbHRYaG9TQjk5amFsWmlaMytEZ0x5d29aV1Joc3JPeThmSHhuWjZkK1BqNysvejcvUHo4L2YzOS8vLy9BU0REWXdBQURGcEpSRUZVZU5yVVdXdDdxam9XTnFMRmVnRmhLQlozMm9xMUZhdVUzWXB1VzVPcy8vK3ZacTBrSUxaMjVubm13NXh6Y3M2MkdJSjU4Njc3b2dWLzc5SDZSK0JUVWtrcGhWRDZHd2VoRk1oQXFiOEpQZ1VLRVVrSnNKNGM1b3VjQUVzaGFRSXYxVitQVHhsMGQ1T0VzWVFsZ3hmZ2dRajFyUHByRWJZcThRS0lhWmw4WnN0bDMyUE01VURRQ0o4ZWZ6aytnSjJYTU5kTUxsbmlvWkFSbXpRVS9uVUFyWHdoekpKa0VBT1hJbENTaTBYQ3NrZlNRUVdhUXZqL0FOUzd5Ty8yeS9sNi9yblJWcUlDeEFOOFU1WWRRNjJtOTM5QytEUHY2b2RyWXd2ZjhVaytHaUVvZERDeGlCWENSRlM3VHQ1ZmRzalhrSkExeUsrN2ZOOWRXVXlxd21lVnQ5cFZOVWZsMmhvVHlqSlIzOWI0QW40emZnUWVjYUVDcnJnSU9NTEtGeXhKeXNrYTBaUHpVZWRuL1dJMHArMDFMRERiR050WHArWHF6TnFVT1UwTlQ5b0orUldmaXR1dnQrTUl0UzhLd29DZ3lNMnFLRHgzeFp5eW4yb3oxdDVRblVuTi9EWjgyMTV2Skp2RVdBZG1yNFNzVjFXYzZjZmwyWU5OK1c2dnJxK3YyemNoaUFBQ0JEUEttRFBRZHpiTVdXeENhOG9uUUtBM3JLZk0vcWZQMDExek5IdERtbW5aUE1XRklXbWM0M3RGZk5kWDNVY0ZrZUF5TC8ybkQySk5CZ0J1a1V6dnlKSTFoNnJ5NXJLR0lwdUFEQXo3V1grVE5iN0dBVVFEZFBWRDFWSlFKbmhaK1JwODE5ZTNOMXh5OVZFazVQMDQyb3RRQWw2ZW5Ea29EUkFzQ0VPTGFzckpUZ3VoVDYram83VFgxYXpRZjRUR1pTY2E0UFE1Nmtkd3YyLzg0WGdkY3g1MGxnb0VqNVFJMEY0b1oxZytRWXhpRnlBcUhhSGZqWEEvWEIxb1dJVDlseGlLNFJDUFJFaUcrSW4vNlVOaXFNVHZkRmZQUjFKRzBURTBpeUs5RG45SHhYRVU0d2hpRWVBZnhiL3FueDVYWVloN3hmZ0xDcDhJU0pzRGN4NkJGNHB6ZlZiQTAyMG1yanRGbnlSQlJxQXpuazdtdW02VzR4bGU4TUpkSXoxQ2JhYXUyeDlCeDYxR0gyZGg2bWI2eTNTdFFoNHJDQUtRM2ViWTNzQUYrZUlZODVBOERSNUlCc2hJRUFqdFc1UndsMFpRV2tZSThkQnF0WjVCSzZiVTBnY0haL2F0Ti9RUG5SNWVGUytrUkFWT0ZpL3dvTy9Sdno4WWwrRFpmbTN0ZTJpSElXN0IxWFZ6dkhiRGkveWhGVitoR29ZU014akVGUk5heUV0bkVIbysyeWxKSEpJYUNmaHQ4QkcxNU5BRmJONW93MWF2QXlxbG02MGxLdThISVQwQWZMYXE4ZllJQnA4ZGU0K2lLajcvQlI5YzBqL0UxNlc3YlZBOE5Cb05MNTdqK3c2ODdKNThiNFNTRElXMlk4MmZFbGFuVVUxWFp0UG5GYXBwaDY0L1h3QThaTW41QU1OZitjN2UzNzFVQ0kzdmM1TVBlblFnQ0RFcXhQd0x2cWIramEvTzhhRWVia21tS0FudUZyNVArQVI2eGFTWVlMUWg4VXJMWHloalBBVUZRWGhIYm1pL2R6VDlpTzd1MFF2UWhJYyt2U1Fnang4NFJtU2FoTzgzYmtEd245Y1E0MXc0cmdhQnVZMGI4ZzM1N1ZkOHVPSVJqWmJuelBFTnZnQ05lbk53eWcwUXE1YS9vSElKU2oyaWVKMFM5M3ZEZldGRENBNThpbi9lZGhCcS9ucUJEbmJTNnQ4RDh1eml4Zk9HNC9OaEhTdmJSTThZZ21aK2RWTEFHdC8xN1poRHYvQm5CaDg2QVB6NWRNa3lyclJiTlB3SlRTWjZETWh3SzVZalg4OW93VUhzNmR1TzRTa3cvSm45dWNYbkliNEo0ZnNBTkdFVm9aREpteEc4MTIzWTlDK2hDcnV2My9CZHQySDBhZEFSZnhLZlJwKzVTVnlJNWNsK2NUZEI1d2UyYisxL0U2RDlncXg2UStiNVlPaERRTVRmYzdiQ2dXNkhXL21DaHYyR2d0R3VtWWRoREFUa3RSdEV2SkVmU0I2cTdlMDNmRmZqekRuaEU5YXBUM2RBL3JqaUw0ekk1d2lBUDdoVHJqY3NLT09SekxxUTMrU0F0UDN1bjJsTUkybncvZm44TEVqOU1sd2VDUlBaakNXMFkya1RKaXRmakFMaFkvZnFDNzdyN3I4cWVBWmZoUEFtWlpMQmlUL2lUcEIxa01XK3JhYUVxa2NpVjVwQVE1OHcvSmt4aVdYbFgzREYzc2twQmRSbnhHZ2YzaHJORDdocytCZFNkMVN1bXpaeTJ6M0QxNnZ3L1FFOEkwRC8wNW4xUEF4enRmL2oyanRMN1VpSUlHSmtpUklONFgxUEFCNkdRRTVLOC9kZUZNWDdMbERHdnp5LzBXY1BuYU5HUndsRFpSdFlhRFRsaXlyTE1kNUN1RzIzYjdZWDhTVW9TY2pueFd6bTk3d1hpbThOL1ZOR3ZMWEhKYzhSQ20zQ2lKWElNZllMNlV1YXhqd3kvTEhjMWZMdEU4SEc1NCsxOGluS1E0TW1Qc3p0MGRQRitpcSt1b1RQeGZqcU1tM01QZThPL1YzRlgyZ3l1Zzh5eElJeFJrRUV5WmFoZ2orNE94dVJQekg4V2ZzbGFWbjcwQ0huWGF1clRxaU04bW55ZU5Td0QxUUJpdndpeHJTRmQ3L2pteVZwQUs0MUZvMVBXUDVVcUQwZ0xQYTBFWTRWVGFlNmhIRkl2S25CWi9qRENnS0xReW1zL3dQcmRpaENraEJvNTZzYkRDZGtFR2Y4WWRXR2tpSkY0Z0cwWDgveHpmd3loN2hUMlhMUE8wSnR2NVlTblFaNHBBTjlDcmdaWmVFVlB2TGhUZjhIMW43Si8ra2Z5Y0g0ZUUxZmx4Snlya0IrNlY5aDJzU3grRUJYT0I1M2J4djRabjR5V09hangza2w2cGxIbkdqKzloNk5oMXltejlwUlVOcUZTUGNNaUE1eXpwKzAxdXJmczE3dGRXejhmYkx4QS8ybER1TndvNDBqa3MybVN1dFU2bURtVERuVnpkVnJlOXUrc3ZobXZ2UFVYejRWZzRpZDhOMFJFTzlrRUFmbElsWEZtcXBsVVlsTTF2Z0lhM2xhdlJpcW1yLzhqemtOS1VuUU5kcW4vU0NjMVIrbXBxQ0dVQkRyL0tXN3ZYM0ZzMHg4aDJYNXdPL05IRlhqUS9zZHBjVGZuZ2I1a0JXVWVQRUFPazJZNFB4elNpY29hSkt1VU9HOGxsbU0vMCtHRXRPR3ZjYVhNcHp5WDB5bmdxVFdCYW1hTlhxcldWaFRiaGRWK2N2MnRzdEhrMFdlSmFTRURYeXp3M3JhUVZmNHpxclJoOS80aVY2UFdPczh2TE95UXh3Y0dIdlBocFR1WTNSTzZ0VTd4UEtBdDZhVVJ5d1pya1lGSklzam1XMjF4Ni9MdDdQK3FSSlluTWVOL0FYTDlBN3J6VXo4cVBETm5Lemo1dWRkRXZNbFVqclB0RTdFRm1BcU1nQWJRMWg2OERqcXRGcWJ4K3NXemh0bURYd3FDTWlFdTZmd2l5UVZ2U3ErV1h5ejJRQjJCK0xLVm1LbUVNTUxyblJDcTRlZVYxVVJaNUljazRjTlZaWFJtcHZDcmtUK1hnMitRRjdHaDNlVWlrVWpmd2xHWmVXZ1QvSjl1dGRucndEVXY2K0xPQU5HYW5kV0xSQ25zckcrUEFOSmc0SmV0OTN1M29SVkwrWGNQa0I3SFJYdzZJZjhSUnA4UmNZaEV1ZW5sNnF1Y3hWdFZKZFJwcWt0cTZVNnNiWHpOcUxWNEFPamNxaTFYUDNVdjBmcFloRjZPVDl3T09GekRpbUZWams4VXAwYnBWVEE0aVozUjVKb2RBeCtIZEZEaVNpU1I4UXBvelQ5RlFSQk5NUlNOK0RoOFU1RUZBV0d1QnpMNldIOEs2YTFRNFRMMDVUdXlhb3A4Z00rdkJGRVArQ0RKOTh2TjZIdUUrMFdoOE9xQTV2NVlYR1B6MHhZT1QxQ3VzcWdQMGxoMkIva284TWFmVUhHbUp0aWRiL0tLWVBlZUd5T3RRRWZMZEM4TWR4UEpxZ295L25CZllHMFh6SVhxdGJEai96cE5DWWUvNUMvakJiNWtKT1NTUmhOSExZWlFkOTNkNm1NWFNmM2loeEd5Uk40Q1c0Mm1EM2Qrem1Jek85UC9DbkFvTURBQXV0UHRpa3hjejNpMnJKY0F6QnFvaHljYVQ2RURmdTk5RGVxcW1SK3hFZmxMYitZdnpnVFVFT3RLaFRMWVZlVXVHWGZ6M0xFVnlhakhUTHpVYkJPaWVsS091Z2xmY1RINThuSHhobWtpTTlGQjlRdjVtcmhkT0JZeklmckhhWWJMRUVuT2krbUcweGozcFBwdlFoTUUrcTg3ZG42MGxzTndrdjVpNThjZFo5QTZFUlhhbndLK3JPazNLaVlKUitrMUtPa0dDUU0rVHY0SG5OeUdUSTJzdmd5aUFnZlRCRDIwVDkwUHIwUE1QZ0dmbkxBeEc3Si9PUWxNRG0rK3ZIOUZuVmIwSXVGM2V1ditRdTdWOWFibVVUTjhEZDE4aU9YdnhnNzVoZ0M3b3N5ZlNMNXpvdCt6OG01bWlmSGtiTVlJajRVTXZRUnlNS1g2cTd3K0lwMW9PSnZnM1hheDJTOTlKZWFBVkEvNngrbVZoSkJCdkcybWIvNHN3STFtU28vK3hZTVE4VFNZYmgwMm1OUFV4Q1RHZkxXZ1h1bmhLZGlCRVBQT1JiK0xwRDkyWno1ZmRReFB5a25jRjg2aStRVGt3WFBXYkFDb1NXb3N6Q2ZsZDRPT3NubndWL2JWMWcvNngrbERRRndyS1p2dWxYKzR2ZFFIaEZndW9qaEpiRDlRenp3bEZSK3NNSkFGOTI1MlNUSFVPLzJWVDhid25BNWdlWGlROG8wYzFmTFJ3VzcxV3FCOFlZNldHanRZajNKcHU0SUlLT1AzV0RpYnZDUmxkc1g1bzNRZjNoL2FYcWpPc2lIWTZ4RFg4ZVQzcXhjM2dISVpvZVRhRXlIMUhCTDB4U05Cc1JJdDZpRmFlaEpnU0VzcFRjVktrMHB0QTV4V1VxQ0d3MTEyaVZHMUFkVXFWNkx0eWgxZVVsQnlVdHZxbG9YWGhGd1VzUmcyOTdHNnltWjE2bUJyT29Hc21uTzZCNk5zdjF6cUJ2UTByUXNkVU5jTDlPbXBVeEh4eDdVTmx1MTFsRDZvTXlDLy9iK1YzY2ZqUjFEYUwyMlBPOWlOeHZldHNkck83SzZxeXgwRjFpYUJyTVEwcmFWcS82MWZsYlU0YnR1c1l2TGIva3V2Sjl1Tk9PcENSSkVsYzlVOWZzTWVYcDVhTFNtbG43VmY2OWIzK1kxbnUxYWF5YTFtNE5xN2FsbEQ1Y1EvalBlbi85OXg3OEZHQUNEOWdaSGl6NmVGZ0FBQUFCSlJVNUVya0pnZ2c9PSI+PC9hPjwvZGl2Pg0KDQogIAkJPC9kaXY+DQo8IS0tY2xvc2UgaGVhZGVyLS0+DQoNCjxkaXYgaWQ9ImNvbnRlbnQiPg0KDQoJPGlmcmFtZSBzdHlsZT0iZGlzcGxheTpub25lIiBzcmM9IiIgaWQ9Im15aWZyYW1lIiBmcmFtZWJvcmRlcj0iMCIgc2Nyb2xsaW5nPSJhdXRvIj4NCgk8L2lmcmFtZT4NCgkJPGRpdiBpZD0iY29udGVudF9sYW5kaW5nX3BhZ2UiPiAgICAgICAgICAgICAgDQoJCTxkaXYgY2xhc3M9InZpZXcgdmlldy1wcm9kdWN0czMgdmlldy1pZC1wcm9kdWN0czMgdmlldy1kaXNwbGF5LWlkLXBhZ2VfMSB2aWV3LWRvbS1pZC0xIj4JCQ0KCQk8ZGl2IGNsYXNzPSJjb250YWluZXIiPg0KCQk8ZGl2IGNsYXNzPSJ0aXRsZS1ib3giPg0KCQk8aDE+JHt0aGlzLmFwcC5uYW1lfTwvaDE+DQoJCTxicj4NCgkJDQoJCTxwPjwvcD4NCgkJCQ0KCQk8L2Rpdj4NCg0KCQkgPGRpdiBjbGFzcz0idmlldyB2aWV3LXByb2R1Y3RzMyB2aWV3LWlkLXByb2R1Y3RzMyB2aWV3LWRpc3BsYXktaWQtcGFnZV8xIHZpZXctZG9tLWlkLTEiPgkJDQo8ZGl2IGNsYXNzPSJjb250YWluZXIiPg0KPGRpdj4NCjx0YWJsZT4NCjx0cj4NCjx0ZD4NClVzZXIgSUQ6IDxmb3JtIGFjdGlvbj0iJHt0aGlzLmFwcC51cmx9IiBtZXRob2Q9R0VUPg0KCTxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9InN0YXRlIiB2YWx1ZT0ic2VhcmNoIi8+DQoJPGlucHV0IHR5cGU9InRleHQiIE5hbWU9InVzZXJpZCIvPgkNCgk8aW5wdXQgdHlwZT0ic3VibWl0IiB2YWx1ZT0iU2VhcmNoIi8+DQo8L2Zvcm0+DQo8L3RkPg0KPC90cj4NCjwvdGFibGU+DQo8L2Rpdj4NCjxocj4="/>
+                    <L7p:VariableToSet stringValue="website_top"/>
+                </L7p:SetVariable>
+                <L7p:SetVariable>
+                    <L7p:Base64Expression stringValue="JHt3ZWJzaXRlX3RvcH0NCjxkaXY+DQpJIGFtIDxiPiR7dGhpcy5hcHAubmFtZX08L2I+IHRvIG1hbmFnZSBjbGllbnQgYXBwbGljYXRpb25zLiBZb3UgY2FuIG1hbmFnZSBjbGllbnQgYXBwcyBhbmQgZ3JhbnRlZCByZXNvdXJjZSBvd25lci9jbGllbnQgY29tYmluYXRpb25zDQo8dGFibGU+DQo8dHI+DQo8dGQ+DQo8Zm9ybSBhY3Rpb249IiR7dGhpcy5hcHAudXJsfSIgbWV0aG9kPUdFVD4NCgk8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJzdGF0ZSIgdmFsdWU9Im1hbmFnZUNsaWVudHMiLz4NCgk8aW5wdXQgdHlwZT0ic3VibWl0IiB2YWx1ZT0iTWFuYWdlIENsaWVudHMiLz4NCjwvZm9ybT4NCjwvdGQ+DQo8dGQ+DQo8Zm9ybSBhY3Rpb249IiR7dGhpcy5hcHAudXJsfSIgbWV0aG9kPUdFVD4NCgk8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJzdGF0ZSIgdmFsdWU9Im1hbmFnZU93bmVyc0NsaWVudHMiLz4NCgk8aW5wdXQgdHlwZT0ic3VibWl0IiB2YWx1ZT0iTWFuYWdlIFVzZXJzL0NsaWVudHMiLz4NCjwvZm9ybT4NCjwvdGQ+DQo8L3RyPg0KPC90YWJsZT4NCjwvZGl2Pg0KPGhyPg=="/>
+                    <L7p:VariableToSet stringValue="htmlHeader"/>
+                </L7p:SetVariable>
+                <L7p:SetVariable>
+                    <L7p:Base64Expression stringValue="PGhyPg0KPGRpdj4NCjxwIGNsYXNzPSJmb290ZXIiPg0KTGF5ZXI3IFRlY2hub2xvZ2llcyBJbmMuLCAke2dhdGV3YXkudGltZS5kZC9NTS95eXl5fSAoRGF5LyBNb250aC8gWWVhcikNCjwvcD4NCjwvZGl2Pg0KPC9ib2R5Pg0KPC9odG1sPg=="/>
+                    <L7p:VariableToSet stringValue="htmlFooter"/>
+                </L7p:SetVariable>
+                <L7p:SetVariable>
+                    <L7p:Base64Expression stringValue="PGJyIC8+DQo8aHI+DQo8L2JvZHk+DQo8L2h0bWw+"/>
+                    <L7p:VariableToSet stringValue="website_bottom"/>
+                </L7p:SetVariable>
+            </wsp:All>
+            <wsp:OneOrMore L7p:Enabled="false" wsp:Usage="Required">
+                <wsp:All wsp:Usage="Required">
+                    <L7p:ComparisonAssertion>
+                        <L7p:Expression1 stringValue="${state}"/>
+                        <L7p:Expression2 stringValue=""/>
+                        <L7p:ExpressionIsVariable booleanValue="false"/>
+                        <L7p:Operator operator="EMPTY"/>
+                        <L7p:Predicates predicates="included">
+                            <L7p:item binary="included">
+                                <L7p:Operator operator="EMPTY"/>
+                                <L7p:RightValue stringValue=""/>
+                            </L7p:item>
+                        </L7p:Predicates>
+                    </L7p:ComparisonAssertion>
+                    <L7p:HardcodedResponse>
+                        <L7p:AssertionComment assertionComment="included">
+                            <L7p:Properties mapValue="included">
+                                <L7p:entry>
+                                    <L7p:key stringValue="LEFT.COMMENT"/>
+                                    <L7p:value stringValue="200"/>
+                                </L7p:entry>
+                            </L7p:Properties>
+                        </L7p:AssertionComment>
+                        <L7p:Base64ResponseBody stringValue="JHt3ZWJzaXRlX3RvcH0KPHA+VGhpcyBtYW5hZ2VtZW50IGFwcGxpY2F0aW9uIGlzIGEgc2ltcGxlIHRvb2wgdG8gbWFuYWdlIGNsaWVudCBhcHBsaWNhdGlvbnMgYW5kIGdyYW50ZWQgcmVzb3VyY2Ugb3duZXIvY2xpZW50IGNvbWJpbmF0aW9uczwvcD4KJHt3ZWJzaXRlX2JvdHRvbX0="/>
+                        <L7p:EarlyResponse booleanValue="true"/>
+                        <L7p:ResponseContentType stringValue="text/html; charset=UTF-8"/>
+                    </L7p:HardcodedResponse>
+                </wsp:All>
+                <wsp:All wsp:Usage="Required">
+                    <L7p:ComparisonAssertion>
+                        <L7p:Expression1 stringValue="${state}"/>
+                        <L7p:Expression2 stringValue="search"/>
+                        <L7p:ExpressionIsVariable booleanValue="false"/>
+                        <L7p:Predicates predicates="included">
+                            <L7p:item binary="included">
+                                <L7p:RightValue stringValue="search"/>
+                            </L7p:item>
+                        </L7p:Predicates>
+                    </L7p:ComparisonAssertion>
+                    <L7p:SetVariable>
+                        <L7p:Base64Expression stringValue=""/>
+                        <L7p:VariableToSet stringValue="token"/>
+                    </L7p:SetVariable>
+                    <wsp:OneOrMore wsp:Usage="Required">
+                        <wsp:All wsp:Usage="Required">
+                            <L7p:JdbcQuery>
+                                <L7p:ConnectionName stringValue="OAuth_MAG"/>
+                                <L7p:MaxRecords intValue="1"/>
+                                <L7p:NamingMap mapValue="included">
+                                    <L7p:entry>
+                                    <L7p:key stringValue="expire"/>
+                                    <L7p:value stringValue="expire"/>
+                                    </L7p:entry>
+                                    <L7p:entry>
+                                    <L7p:key stringValue="token"/>
+                                    <L7p:value stringValue="token"/>
+                                    </L7p:entry>
+                                </L7p:NamingMap>
+                                <L7p:SqlQuery stringValue="select token, expire from tokenstore where userid=${request.http.parameter.userid};"/>
+                            </L7p:JdbcQuery>
+                            <L7p:SetVariable>
+                                <L7p:Base64Expression stringValue="PHA+VXNlciBJRDogJHtyZXF1ZXN0Lmh0dHAucGFyYW1ldGVyLnVzZXJpZH08L3A+DQo8cD5Ub2tlbjogJHtqZGJjUXVlcnkudG9rZW59PC9wPg0KPHA+RXhwaXJ5IFRpbWU6ICR7amRiY1F1ZXJ5LmV4cGlyZX08L3A+DQo8Zm9ybSBhY3Rpb249IiR7dGhpcy5hcHAudXJsfSIgbWV0aG9kPUdFVD4NCgk8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJzdGF0ZSIgdmFsdWU9ImRlbGV0ZSIvPg0KCTxpbnB1dCB0eXBlPSJoaWRkZW4iIE5hbWU9InVzZXJpZCIgdmFsdWU9IiR7cmVxdWVzdC5odHRwLnBhcmFtZXRlci51c2VyaWR9Ii8+CQ0KCTxpbnB1dCB0eXBlPSJzdWJtaXQiIHZhbHVlPSJkZWxldGUiLz4NCjwvZm9ybT4="/>
+                                <L7p:VariableToSet stringValue="message"/>
+                            </L7p:SetVariable>
+                        </wsp:All>
+                        <L7p:SetVariable>
+                            <L7p:Base64Expression stringValue="PHA+VXNlciBJRDogJHtyZXF1ZXN0Lmh0dHAucGFyYW1ldGVyLnVzZXJpZH08L3A+DQo8cD5ObyBUb2tlbiBGb3VuZDwvcD4="/>
+                            <L7p:VariableToSet stringValue="message"/>
+                        </L7p:SetVariable>
+                    </wsp:OneOrMore>
+                    <L7p:HardcodedResponse>
+                        <L7p:AssertionComment assertionComment="included">
+                            <L7p:Properties mapValue="included">
+                                <L7p:entry>
+                                    <L7p:key stringValue="LEFT.COMMENT"/>
+                                    <L7p:value stringValue="200"/>
+                                </L7p:entry>
+                            </L7p:Properties>
+                        </L7p:AssertionComment>
+                        <L7p:Base64ResponseBody stringValue="JHt3ZWJzaXRlX3RvcH0KJHttZXNzYWdlfQoke3dlYnNpdGVfYm90dG9tfQ=="/>
+                        <L7p:EarlyResponse booleanValue="true"/>
+                        <L7p:ResponseContentType stringValue="text/html; charset=UTF-8"/>
+                    </L7p:HardcodedResponse>
+                </wsp:All>
+                <wsp:All wsp:Usage="Required">
+                    <L7p:ComparisonAssertion>
+                        <L7p:Expression1 stringValue="${state}"/>
+                        <L7p:Expression2 stringValue="delete"/>
+                        <L7p:ExpressionIsVariable booleanValue="false"/>
+                        <L7p:Predicates predicates="included">
+                            <L7p:item binary="included">
+                                <L7p:RightValue stringValue="delete"/>
+                            </L7p:item>
+                        </L7p:Predicates>
+                    </L7p:ComparisonAssertion>
+                    <wsp:OneOrMore wsp:Usage="Required">
+                        <wsp:All wsp:Usage="Required">
+                            <L7p:JdbcQuery>
+                                <L7p:ConnectionName stringValue="OAuth_MAG"/>
+                                <L7p:MaxRecords intValue="1"/>
+                                <L7p:SqlQuery stringValue="delete from tokenstore where userid=${request.http.parameter.userid};"/>
+                            </L7p:JdbcQuery>
+                            <L7p:SetVariable>
+                                <L7p:Base64Expression stringValue="PHA+VXNlciBJRDogJHtyZXF1ZXN0Lmh0dHAucGFyYW1ldGVyLnVzZXJpZH08L3A+DQo8cD5Ub2tlbiBTdWNjZXNmdWxseSBEZWxldGVkPC9wPg=="/>
+                                <L7p:VariableToSet stringValue="message"/>
+                            </L7p:SetVariable>
+                        </wsp:All>
+                        <L7p:SetVariable>
+                            <L7p:Base64Expression stringValue="PHA+VXNlciBJRDogJHtyZXF1ZXN0Lmh0dHAucGFyYW1ldGVyLnVzZXJpZH08L3A+DQo8cD5FcnJvciBEZWxldGluZyBUb2tlbjwvcD4="/>
+                            <L7p:VariableToSet stringValue="message"/>
+                        </L7p:SetVariable>
+                    </wsp:OneOrMore>
+                    <L7p:HardcodedResponse>
+                        <L7p:AssertionComment assertionComment="included">
+                            <L7p:Properties mapValue="included">
+                                <L7p:entry>
+                                    <L7p:key stringValue="LEFT.COMMENT"/>
+                                    <L7p:value stringValue="200"/>
+                                </L7p:entry>
+                            </L7p:Properties>
+                        </L7p:AssertionComment>
+                        <L7p:Base64ResponseBody stringValue="JHt3ZWJzaXRlX3RvcH0KJHttZXNzYWdlfQoke3dlYnNpdGVfYm90dG9tfQ=="/>
+                        <L7p:EarlyResponse booleanValue="true"/>
+                        <L7p:ResponseContentType stringValue="text/html; charset=UTF-8"/>
+                    </L7p:HardcodedResponse>
+                </wsp:All>
+            </wsp:OneOrMore>
+            <L7p:ExportVariables>
+                <L7p:ExportedVars stringArrayValue="included">
+                    <L7p:item stringValue="issueToken"/>
+                </L7p:ExportedVars>
+            </L7p:ExportVariables>
+        </wsp:All>
+    </wsp:Policy>
+</exp:Export>

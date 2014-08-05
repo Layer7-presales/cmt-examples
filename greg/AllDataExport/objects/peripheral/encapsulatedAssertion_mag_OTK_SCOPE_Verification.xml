@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><l7:EncapsulatedAssertion xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="0746e418d6dcc69d23656b445fb55725" version="0">
+    <l7:Name>mag OTK SCOPE Verification</l7:Name>
+    <l7:Guid>magf78f0f85-00e2-49b1-95e4-e520df255</l7:Guid>
+    <l7:PolicyReference id="0746e418d6dcc69d23656b445fb54ea6" resourceUri="http://ns.l7tech.com/2010/04/gateway-management/policies"/>
+    <l7:EncapsulatedArguments>
+        <l7:EncapsulatedAssertionArgument>
+            <l7:Ordinal>2</l7:Ordinal>
+            <l7:ArgumentName>scope.required</l7:ArgumentName>
+            <l7:ArgumentType>string</l7:ArgumentType>
+            <l7:GuiLabel>Required SCOPE</l7:GuiLabel>
+            <l7:GuiPrompt>true</l7:GuiPrompt>
+        </l7:EncapsulatedAssertionArgument>
+        <l7:EncapsulatedAssertionArgument>
+            <l7:Ordinal>3</l7:Ordinal>
+            <l7:ArgumentName>fail</l7:ArgumentName>
+            <l7:ArgumentType>string</l7:ArgumentType>
+            <l7:GuiLabel>Fail if the SCOPE is found (true|false)?</l7:GuiLabel>
+            <l7:GuiPrompt>true</l7:GuiPrompt>
+        </l7:EncapsulatedAssertionArgument>
+        <l7:EncapsulatedAssertionArgument>
+            <l7:Ordinal>1</l7:Ordinal>
+            <l7:ArgumentName>scope.granted</l7:ArgumentName>
+            <l7:ArgumentType>string</l7:ArgumentType>
+            <l7:GuiLabel>Granted SCOPE</l7:GuiLabel>
+            <l7:GuiPrompt>true</l7:GuiPrompt>
+        </l7:EncapsulatedAssertionArgument>
+    </l7:EncapsulatedArguments>
+    <l7:EncapsulatedResults/>
+    <l7:Properties>
+        <l7:Property key="paletteFolder">
+            <l7:StringValue>internalAssertions</l7:StringValue>
+        </l7:Property>
+        <l7:Property key="description">
+            <l7:StringValue>Veryfies SCOPE and fails if the requested SCOPE is not part of the permitted one</l7:StringValue>
+        </l7:Property>
+        <l7:Property key="policyGuid">
+            <l7:StringValue>3aeb3883-1890-472e-a8ff-7c30ab633291</l7:StringValue>
+        </l7:Property>
+        <l7:Property key="paletteIconResourceName">
+            <l7:StringValue>oauth.png</l7:StringValue>
+        </l7:Property>
+    </l7:Properties>
+</l7:EncapsulatedAssertion>
