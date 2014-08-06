@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?><l7:ClusterProperty xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="0000000000000000fffffffffff5519f" version="1">
+    <l7:Name>cluster.hostname</l7:Name>
+    <l7:Value>explore.layer7.ca</l7:Value>
+</l7:ClusterProperty>

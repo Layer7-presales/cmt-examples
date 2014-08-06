@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?><l7:ClusterProperty xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="17b2af7c7f5c8361ac9f89cbc40c14dd" version="0">
+    <l7:Name>warehouseendpoint</l7:Name>
+    <l7:Value>http://warehouse.com</l7:Value>
+</l7:ClusterProperty>

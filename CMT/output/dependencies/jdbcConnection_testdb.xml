@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><l7:JDBCConnection xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="17b2af7c7f5c8361ac9f89cbc40c13eb" version="0">
+    <l7:Name>testdb</l7:Name>
+    <l7:Enabled>true</l7:Enabled>
+    <l7:Properties>
+        <l7:Property key="maximumPoolSize">
+            <l7:IntegerValue>15</l7:IntegerValue>
+        </l7:Property>
+        <l7:Property key="minimumPoolSize">
+            <l7:IntegerValue>3</l7:IntegerValue>
+        </l7:Property>
+    </l7:Properties>
+    <l7:Extension>
+        <l7:DriverClass>com.mysql.jdbc.Driver</l7:DriverClass>
+        <l7:JdbcUrl>jdbc:mysql://localhost:3306/testDB</l7:JdbcUrl>
+        <l7:ConnectionProperties>
+            <l7:Property key="user">
+                <l7:StringValue>testuser</l7:StringValue>
+            </l7:Property>
+        </l7:ConnectionProperties>
+    </l7:Extension>
+</l7:JDBCConnection>
