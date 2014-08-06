@@ -15,7 +15,7 @@
         </l7:ServiceMappings>
         <l7:Properties>
             <l7:Property key="policyRevision">
-                <l7:LongValue>3</l7:LongValue>
+                <l7:LongValue>4</l7:LongValue>
             </l7:Property>
             <l7:Property key="wssProcessingEnabled">
                 <l7:BooleanValue>false</l7:BooleanValue>
@@ -30,7 +30,7 @@
     </l7:ServiceDetail>
     <l7:Resources>
         <l7:ResourceSet tag="policy">
-            <l7:Resource type="policy" version="2">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+            <l7:Resource type="policy" version="3">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;wsp:Policy xmlns:L7p="http://www.layer7tech.com/ws/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy"&gt;
     &lt;wsp:All wsp:Usage="Required"&gt;
         &lt;L7p:CommentAssertion&gt;
