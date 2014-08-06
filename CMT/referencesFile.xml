@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><references>
-    <clusterProperty id="0000000000000000fffffffffff5519f" name="cluster.hostname" refType=""/>
-    <clusterProperty id="17b2af7c7f5c8361ac9f89cbc40c14dd" name="warehouseendpoint" refType=""/>
-    <jdbcConnection id="17b2af7c7f5c8361ac9f89cbc40c13eb" name="testdb" refType="com.l7tech.console.policy.exporter.JdbcConnectionReference" syn="880e4a44-30b1-3439-a487-f06ea90a5e58"/>
-</references>
