@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><l7:JDBCConnection xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="17b2af7c7f5c8361ac9f89cbc40c13eb" version="0">
+<?xml version="1.0" encoding="UTF-8"?><l7:JDBCConnection xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="17b2af7c7f5c8361ac9f89cbc40c13eb" version="1">
     <l7:Name>testdb</l7:Name>
     <l7:Enabled>true</l7:Enabled>
     <l7:Properties>

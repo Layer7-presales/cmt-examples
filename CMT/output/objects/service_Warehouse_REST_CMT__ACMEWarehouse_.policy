@@ -13,6 +13,9 @@
             <L7p:CommentAssertion>
                 <L7p:Comment stringValue="Demo ACMEWarehouse REST Policy v4"/>
             </L7p:CommentAssertion>
+            <L7p:CommentAssertion>
+                <L7p:Comment stringValue="MIGRATED"/>
+            </L7p:CommentAssertion>
             <L7p:CustomizeErrorResponse>
                 <L7p:ExtraHeaders nameValuePairArray="included"/>
             </L7p:CustomizeErrorResponse>
