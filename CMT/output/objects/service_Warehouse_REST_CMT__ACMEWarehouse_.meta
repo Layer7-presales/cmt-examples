@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><l7:Service xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="17b2af7c7f5c8361ac9f89cbc40c1de9" version="2">
-    <l7:ServiceDetail folderId="17b2af7c7f5c8361ac9f89cbc40c1da9" id="17b2af7c7f5c8361ac9f89cbc40c1de9" version="2">
+<?xml version="1.0" encoding="UTF-8"?><l7:Service xmlns:l7="http://ns.l7tech.com/2010/04/gateway-management" id="17b2af7c7f5c8361ac9f89cbc40c2160" version="2">
+    <l7:ServiceDetail folderId="17b2af7c7f5c8361ac9f89cbc40c2120" id="17b2af7c7f5c8361ac9f89cbc40c2160" version="2">
         <l7:Name>Warehouse REST CMT</l7:Name>
         <l7:Enabled>true</l7:Enabled>
         <l7:ServiceMappings>
